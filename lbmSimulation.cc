@@ -49,20 +49,10 @@ struct LBMData
     std::unique_ptr<double[]> data;  ///< Big array of size 14 * (dimX * dimY)
 
     // Pointers into the 'data' array:
-    double* f0;         ///< Rest distribution function.
-    double* fN;         ///< North distribution function.
-    double* fE;         ///< East distribution function.
-    double* fS;         ///< South distribution function.
-    double* fW;         ///< West distribution function.
-    double* fNE;        ///< North-East distribution function.
-    double* fNW;        ///< North-West distribution function.
-    double* fSE;        ///< South-East distribution function.
-    double* fSW;        ///< South-West distribution function.
-    double* density;    ///< Macroscopic density.
-    double* velocityX;  ///< Macroscopic velocity in the x-direction.
-    double* velocityY;  ///< Macroscopic velocity in the y-direction.
-    double* vorticity;  ///< Vorticity of the flow.
-    double* speed;      ///< Speed (magnitude of velocity).
+    
+    //align
+    alignas(64) double *f0, *fN, *fE, *fS, *fW, *fNE, *fNW, *fSE, *fSW;
+    alignas(64) double *density, *velocityX, *velocityY, *vorticity, *speed;
 
     // Barrier array (true if the cell is a barrier).
     std::unique_ptr<bool[]> barrier;
@@ -159,6 +149,7 @@ static void setEquilibrium(LBMData& lbmData,
 // -----------------------------------------------------------------------------
 void initBarrier(LBMData& lbmData, BarrierType barrierType)
 {
+    #pragma omp parallel for 
     for (int j = 0; j < static_cast<int>(lbmData.dimY); j++)
     {
         const int row = j * lbmData.dimX;
@@ -209,6 +200,7 @@ void initBarrier(LBMData& lbmData, BarrierType barrierType)
 // -----------------------------------------------------------------------------
 void initFluid(LBMData& lbmData, double speed)
 {
+    #pragma omp parallel for
     for (int j = 0; j < static_cast<int>(lbmData.dimY); j++)
     {
         const int row = j * lbmData.dimX;
@@ -226,7 +218,7 @@ void initFluid(LBMData& lbmData, double speed)
 void collide(LBMData& lbmData, double viscosity)
 {
     const double omega = 1.0 / (3.0 * viscosity + 0.5); // Relaxation parameter
-
+    #pragma omp parallel for
     for (int j = 1; j < static_cast<int>(lbmData.dimY) - 1; j++)
     {
         const int row = j * lbmData.dimX;
@@ -288,6 +280,7 @@ void collide(LBMData& lbmData, double viscosity)
 void stream(LBMData& lbmData)
 {
     // NW direction streaming.
+    #pragma omp parallel for
     for (int j = static_cast<int>(lbmData.dimY) - 2; j > 0; j--)
     {
         const int row  = j * lbmData.dimX;
@@ -300,6 +293,7 @@ void stream(LBMData& lbmData)
     }
 
     // NE direction streaming.
+    #pragma omp parallel for
     for (int j = static_cast<int>(lbmData.dimY) - 2; j > 0; j--)
     {
         const int row  = j * lbmData.dimX;
@@ -312,6 +306,7 @@ void stream(LBMData& lbmData)
     }
 
     // SE direction streaming.
+    #pragma omp parallel for
     for (int j = 1; j < static_cast<int>(lbmData.dimY) - 1; j++)
     {
         const int row  = j * lbmData.dimX;
@@ -324,6 +319,7 @@ void stream(LBMData& lbmData)
     }
 
     // SW direction streaming.
+    #pragma omp parallel for
     for (int j = 1; j < static_cast<int>(lbmData.dimY) - 1; j++)
     {
         const int row  = j * lbmData.dimX;
@@ -341,6 +337,7 @@ void stream(LBMData& lbmData)
 // -----------------------------------------------------------------------------
 void bounceBackStream(LBMData& lbmData)
 {
+    #pragma omp parallel for
     for (int j = 1; j < static_cast<int>(lbmData.dimY) - 1; j++)
     {
         const int row  = j * lbmData.dimX;
@@ -427,7 +424,8 @@ void computeSpeed(LBMData& lbmData)
 // computeVorticity()
 // -----------------------------------------------------------------------------
 void computeVorticity(LBMData& lbmData)
-{
+{   
+    #pragma omp parallel for 
     for (int j = 1; j < static_cast<int>(lbmData.dimY) - 1; j++)
     {
         const int row  = j * lbmData.dimX;
@@ -492,6 +490,7 @@ void mapDensityToColor(double value,
  */
 int main(int argc, char** argv)
 {
+    omp_set_num_threads(2);
     // Determine if movie mode is enabled.
     bool movieMode = false;
     for (int i = 1; i < argc; i++)
@@ -545,7 +544,7 @@ int main(int argc, char** argv)
     double maxValue = 1.757;
 
     // Open CSV file for timing output.
-    std::ofstream csvFile("fluid.csv");
+    std::ofstream csvFile("fluid.csv", std::ios::app);
     if (!csvFile.is_open())
     {
         std::cerr << "Error: Could not open fluid.csv for writing." << std::endl;
