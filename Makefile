@@ -1,6 +1,6 @@
 # Compiler
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra
+CXXFLAGS = -std=c++11 -Wall -Wextra -fopenmp
 
 # Find all .cc files and create a list of executables
 SOURCES := $(wildcard *.cc)

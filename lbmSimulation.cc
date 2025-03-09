@@ -10,6 +10,7 @@
 #include <vector>
 #include <limits>
 #include <string>
+#include <omp.h>
 
 /**
  * @file lbmSimulation.cc
