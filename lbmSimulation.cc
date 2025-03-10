@@ -490,7 +490,7 @@ void mapDensityToColor(double value,
  */
 int main(int argc, char** argv)
 {
-    omp_set_num_threads(8);
+    omp_set_num_threads(16);
     // Determine if movie mode is enabled.
     bool movieMode = false;
     for (int i = 1; i < argc; i++)
