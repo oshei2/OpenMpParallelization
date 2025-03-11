@@ -1,0 +1,23 @@
+/*
+ 	Omar Sheikh
+ 	P01 - Islands in the Stream
+ 	10 Mar 2025
+
+ 	I certify that this is my work and, where appropriate, an extension of the starter code provided for the assignment.
+ */
+
+	My strategy to parallelize the LBM fluid simulation was to find the most costly and heavy computing functions such as
+the collide() and both stream functions. I prioritized parallelizing these first because they are operation intensive. For 
+collide I just added a standard pragma omp parallel for because the for loops are not cleanly nested and these are variable 
+inbetween the loops. I needed to make sure not to have threads in areas that should be independent and cause race conditions. 
+For the stream function I parallelized all four loops in it and I also parallelized the bounce back function. After those main 
+functions were parallelized I went through the code and I parallelized any other functions where I saw fit. I tried scheduling 
+dynamic threads to make sure workload was even but I wasn't able to get good results because I was having issues with heavy remote 
+machine usuage which was skewing my results. One day I was running the program all day trying to optimize and I ran it multiple times 
+and each time would take an hour plus even with optimizations. I ran the program early in the morning and my optimizations started to 
+show with 3.56x speed up at most. Another challenge was race conditions in stream when using collapse. I had to switch it to regular 
+parallel for. The observed speedup was never close to the ideal scaling only coming close with 8 threads were the ideal scaling would be
+8x but it was 3.56x. I want to say the speed up was limited by overhead and memory issues. What was interesting was the massive 
+improvement at 8 threads compared to the rest of the threads. For the future maybe optimize the program by aligning beforehand.
+I learned this in cs 463 with Jakob Erikkson, where we had to speed up programs similar to this assignment. I also want to use 
+even more optimization methods but I didn't have much luck with other OMP methods. 
