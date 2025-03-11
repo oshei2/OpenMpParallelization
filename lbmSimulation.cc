@@ -1,3 +1,11 @@
+/*
+ 	Omar Sheikh
+ 	P01 - Islands in the Stream
+ 	10 Mar 2025
+
+ 	I certify that this is my work and, where appropriate, an extension of the starter code provided for the assignment.
+ */
+
 #include <cmath>
 #include <cstdint>
 #include <memory>
