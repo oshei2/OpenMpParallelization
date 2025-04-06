@@ -1,3 +1,6 @@
+**Grade:** 90.0/100.0 <BR>
+**Comments:** Nice job, score is for 1.5x – 6.0x speedup group, don’t need to put attestation in reflection.txt,  <BR>
+
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/5GkrDb0I)
 # OpenMP Parallelization of LBM Simulation (100 points)
 

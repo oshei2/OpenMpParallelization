@@ -1,0 +1,6 @@
+rm -f lbmSimulation-serial lbmSimulation
+
+
+g++ -std=c++11 -Wall -Wextra -fopenmp lbmSimulation-serial.cc -o lbmSimulation-serial
+g++ -std=c++11 -Wall -Wextra -fopenmp lbmSimulation.cc -o lbmSimulation
+

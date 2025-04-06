@@ -1,0 +1,2 @@
+Switched to a new branch 'development'
+Branch 'development' set up to track remote branch 'development' from 'origin'.
